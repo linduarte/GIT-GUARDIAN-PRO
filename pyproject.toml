@@ -1,0 +1,12 @@
+[project]
+name = "git-guardian-pro"
+version = "0.1.0"
+description = "Local-First Repository Monitoring with YubiKey Authentication"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "gitpython>=3.1.46",
+    "nicegui>=3.6.1",
+    "nuitka>=2.8.10",
+    "pywebview>=6.1",
+]
