@@ -1,80 +1,42 @@
 import os
 import json
-import subprocess
-
-def get_yubikey_serial():
-    """Helper to get the connected YubiKey serial for verification (optional)."""
-    try:
-        result = subprocess.run(['ykman', 'list'], capture_output=True, text=True, shell=True)
-        return result.stdout.strip()
-    except Exception:
-        return "Not Found"
+# import subprocess
 
 def generate():
-    # 1. Configuration: Define your Roots and Serials
-    # Note: Use raw strings (r"") for Windows paths to avoid escape character issues
+    # Definição das raízes de busca e seriais vinculados [cite: 2]
     structure = {
-        "pessoal": {
-            "root": r"D:\reposground\personal", 
-            "serial": "27757828"
-        },
-        "work": {
-            "root": r"D:\reposground\work", 
-            "serial": "23959486" # Update with your work key serial
-        }
+        "pessoal": {"root": r"D:\reposground\personal", "serial": "27757828"},
+        "work": {"root": r"D:\reposground\work", "serial": "23959486"}
     }
 
     repos_config = {}
-
-    print("--- 🔍 Scanning Repositories ---")
+    
+    # Injeção direta no main.dist e na raiz para suporte ao executável [cite: 6, 7]
+    dist_folder = 'main.dist'
+    if not os.path.exists(dist_folder):
+        os.makedirs(dist_folder)
 
     for category, info in structure.items():
         root_path = info["root"]
-        serial = info["serial"]
-        
         if not os.path.exists(root_path):
-            print(f"⚠️ Warning: Root path not found for {category}: {root_path}")
             continue
 
         repos_config[category] = []
         
-        # Scan immediate subdirectories for .git folders
+        # Varredura imediata de subdiretórios em busca de pastas .git [cite: 4]
         for folder in os.listdir(root_path):
             full_path = os.path.join(root_path, folder)
-            git_path = os.path.join(full_path, ".git")
-
-            if os.path.isdir(git_path):
-                # Clean up path for JSON (use forward slashes for cross-platform safety)
-                clean_path = full_path.replace("\\", "/")
-                
-                repo_entry = {
+            if os.path.isdir(os.path.join(full_path, ".git")):
+                repos_config[category].append({
                     "name": folder,
-                    "path": clean_path,
-                    "serial": serial
-                }
-                repos_config[category].append(repo_entry)
-                print(f"✅ Found [{category}]: {folder}")
+                    "path": full_path.replace("\\", "/"), # Normalização para JSON [cite: 5]
+                    "serial": info["serial"]
+                })
 
-    # 2. Option B Logic: Direct Injection into main.dist
-    dist_folder = 'main.dist'
-    
-    # Ensure the distribution folder exists (prevents errors during first build)
-    if not os.path.exists(dist_folder):
-        os.makedirs(dist_folder)
-        print(f"📁 Created directory: {dist_folder}")
-
-    target_file = os.path.join(dist_folder, 'repos.json')
-
-    # 3. Save the JSON
-    try:
-        with open(target_file, 'w', encoding='utf-8') as f:
+    # Salva o arquivo em ambos os locais para garantir consistência
+    for path in ['repos.json', os.path.join(dist_folder, 'repos.json')]:
+        with open(path, 'w', encoding='utf-8') as f:
             json.dump(repos_config, f, indent=4, ensure_ascii=False)
-        print("\n========================================")
-        print(f"🚀 BINGO! Configuration injected to: {target_file}")
-        print(f"📊 Total repositories mapped: {sum(len(v) for v in repos_config.values())}")
-        print("========================================")
-    except Exception as e:
-        print(f"❌ Error saving configuration: {e}")
 
 if __name__ == "__main__":
     generate()
