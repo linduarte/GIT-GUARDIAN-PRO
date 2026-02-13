@@ -71,6 +71,32 @@ uv run python -m nuitka `
 
 - **Compiler:** Nuitka (Standalone Mode)
 
+1. O Comando de Compilação Corrigido (Nuitka)
+Execute este comando. A flag --include-package-data é a chave para trazer os arquivos .html que o NiceGUI está pedindo:
+
+```bash
+uv run nuitka --standalone --show-memory --show-progress --remove-output --include-package=nicegui --include-package-data=nicegui --plugin-enable=tk-inter --output-dir=dist_folder main.py
+```
+2. Por que isso resolve?
+--include-package=nicegui: Traz a lógica (os arquivos .py).
+
+--include-package-data=nicegui: Traz os arquivos não-Python (HTML, CSS, JS e as pastas templates e static). Sem isso, o servidor NiceGUI sobe, mas "não tem o que servir" ao navegador, gerando o erro 500.
+
+Checklist de Verificação Pós-Build
+Antes de clicar no .exe, abra a pasta dist_folder/main.dist e verifique se a estrutura está assim:
+
+main.exe (O binário).
+
+repos.json (Copie manualmente para cá!).
+
+Pasta nicegui/:
+
+Deve conter a subpasta templates/ (com o index.html dentro).
+
+Deve conter a subpasta static/ (com vários arquivos .js e .css).
+
+
+
 - **Hardware:** YubiKey 5 Series (via `ykman`)
 
 ---
