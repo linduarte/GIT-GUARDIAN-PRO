@@ -4,11 +4,12 @@ __pycache__/
 .python-version
 uv.lock
 
-# --- Nuitka Build Artifacts ---
-# These are the "ghost" folders used during compilation
-*.build/
-*.dist/
-
+repos.json
+main.dist/
+build_output/
+dist_folder/
+__pycache__/
+*.exe
 # --- Environment Specific ---
 .env
 *.log
@@ -16,4 +17,3 @@ uv.lock
 # --- Project Data ---
 # Note: If you want your repos.json template in Git, DON'T ignore it.
 # But if it contains private paths, you might want to ignore it:
-# repos.json
