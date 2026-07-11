@@ -13,7 +13,7 @@ __pycache__/
 # --- Environment Specific ---
 .env
 *.log
-
+.mypy_cache/
 # --- Project Data ---
 # Note: If you want your repos.json template in Git, DON'T ignore it.
 # But if it contains private paths, you might want to ignore it:
